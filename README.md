@@ -50,9 +50,11 @@ Verificá que arrancó: `http://localhost:3000/api/health` → `{ "status": "ok"
 |---|---|
 | `PORT` | Puerto del servidor (default: `3000`) |
 | `DB_HOST` | Host de MySQL (default: `localhost`) |
+| `DB_PORT` | Puerto de MySQL (default: `3306`; Aiven usa puertos no estándar) |
 | `DB_USER` | Usuario de MySQL |
 | `DB_PASSWORD` | Contraseña de MySQL |
 | `DB_NAME` | Nombre de la base (default: `incluyendo_sp`) |
+| `DB_SSL` | `true` para hosts remotos que exigen TLS (Aiven). Default: `false` |
 | `N8N_WEBHOOK_URL` | URL del webhook de n8n que recibe el prompt enriquecido |
 | `N8N_SUGGESTIONS_WEBHOOK_URL` | URL del webhook de n8n que dispara el mail de aviso de sugerencias (opcional: si no está, la sugerencia igual se guarda en MySQL) |
 | `NODE_ENV` | `development` \| `production` |
