@@ -8,7 +8,7 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "seed": "node db/seed.js",
-    "test": "node --test test/"
+    "test": "node --test"
   },
   "keywords": [
     "bff",
