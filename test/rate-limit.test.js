@@ -5,7 +5,7 @@
 
 'use strict';
 
-const { test } = require('node:test');
+const { test, beforeEach, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
 const express = require('express');
 
@@ -21,6 +21,21 @@ const apiRoutes = require('../src/routes/api.routes');
 const app = express();
 app.use(express.json());
 app.use('/api', apiRoutes);
+
+// Silenciar logs de producción del SUT: evita corromper el pipe IPC del test
+// runner (nodejs/node#56802) cuando el código loguea a stdout.
+const originalConsoleLog = console.log;
+const originalConsoleError = console.error;
+
+beforeEach(() => {
+  console.log = () => {};
+  console.error = () => {};
+});
+
+afterEach(() => {
+  console.log = originalConsoleLog;
+  console.error = originalConsoleError;
+});
 
 test('POST /api/assistant: request 21 es rechazado por rate limit (429)', async () => {
   const supertest = require('supertest');

@@ -6,7 +6,7 @@
 
 'use strict';
 
-const { test, afterEach } = require('node:test');
+const { test, beforeEach, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
 const express = require('express');
 
@@ -56,6 +56,26 @@ afterEach(() => {
 
 // Espera a que la cola de microtasks/I/O se drene (para los fetch fire-and-forget)
 const flush = () => new Promise((resolve) => setImmediate(resolve));
+
+// ---------------------------------------------------------------------------
+// Silenciar los logs del código de producción (SUT) durante los tests.
+// node --test corre cada archivo en un proceso hijo y comunica resultados por
+// IPC con serialización V8: si el hijo escribe texto crudo a stdout (nuestros
+// console.log/error de producción), corrompe el pipe y el padre falla con
+// "Unable to deserialize cloned data..." (nodejs/node#56802, #64061).
+// ---------------------------------------------------------------------------
+const originalConsoleLog = console.log;
+const originalConsoleError = console.error;
+
+beforeEach(() => {
+  console.log = () => {};
+  console.error = () => {};
+});
+
+afterEach(() => {
+  console.log = originalConsoleLog;
+  console.error = originalConsoleError;
+});
 
 // ---------------------------------------------------------------------------
 // GET /api/institutions

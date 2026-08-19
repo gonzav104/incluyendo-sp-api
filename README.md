@@ -215,6 +215,8 @@ npm test
 - `test/api.test.js` — GET /api/institutions (200 + normalización JSON, 500), POST /api/suggestions (400, 201, 500, notificación a n8n con los 4 campos, 201 aunque n8n falle, sin webhook no llama), POST /api/assistant (400, 500 sin webhook, 502, 200, texto crudo).
 - `test/rate-limit.test.js` — el request 21 a `/api/assistant` responde `429`; el request 11 a `/api/suggestions` responde `429`; verifica los headers `RateLimit-Limit`.
 
+> **Ojo:** los tests silencian `console.log`/`console.error` del código de producción. `node --test` corre cada archivo en un proceso hijo y comunica resultados por IPC con serialización V8: si el hijo escribe texto crudo a stdout, corrompe el pipe y el archivo falla intermitentemente con "Unable to deserialize cloned data..." ([nodejs/node#56802](https://github.com/nodejs/node/issues/56802)). No quites ese silenciamiento sin antes probar el CI en Node 22.
+
 **CI:** GitHub Action (`.github/workflows/ci.yml`) corre `npm test` en Node 20 y 22 en cada push a `main` y en cada pull request.
 
 ## Frontend consumidor
