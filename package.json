@@ -1,0 +1,23 @@
+{
+  "name": "incluyendo-sp-api",
+  "version": "1.0.0",
+  "description": "BFF para Incluyendo SP - Backend For Frontend conectado a MySQL",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js"
+  },
+  "keywords": ["bff", "express", "mysql", "incluyendo-sp"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mysql2": "^3.23.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

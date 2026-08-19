@@ -1,0 +1,22 @@
+# Dependencias
+node_modules/
+
+# Entornos y secretos (¡Súper importante!)
+.env
+.env.*
+*.json
+!package.json
+!package-lock.json
+# Logs y bases de datos locales temporales
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+*.log
+*.sqlite
+*.sqlite-journal
+
+# Sistema operativo y editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
