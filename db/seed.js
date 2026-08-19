@@ -38,6 +38,7 @@ const INSERT_SQL = `
 (async () => {
   let inserted = 0;
   let updated = 0;
+  let unchanged = 0;
 
   try {
     for (const institution of institutions) {
@@ -57,15 +58,20 @@ const INSERT_SQL = `
 
       const [result] = await pool.query(INSERT_SQL, values);
 
-      // MySQL: affectedRows === 1 → insert nuevo; === 2 → update de fila existente
+      // MySQL: affectedRows === 1 → insert nuevo; === 2 → update con cambios;
+      // === 0 → la fila ya existía con datos idénticos (ON DUPLICATE KEY no tocó nada)
       if (result.affectedRows === 1) {
         inserted += 1;
       } else if (result.affectedRows === 2) {
         updated += 1;
+      } else {
+        unchanged += 1;
       }
     }
 
-    console.log(`✅ Seed completado: ${inserted} insertadas, ${updated} actualizadas (total ${institutions.length})`);
+    console.log(
+      `✅ Seed completado: ${inserted} insertadas, ${updated} actualizadas, ${unchanged} sin cambios (total ${institutions.length})`
+    );
   } catch (error) {
     console.error('❌ Error ejecutando el seed:', error.message);
     console.error('   ¿Ejecutaste primero db/schema.sql?');

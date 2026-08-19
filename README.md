@@ -7,7 +7,7 @@ Backend For Frontend (BFF) de **Incluyendo SP** — mini-aplicación web para fa
 Es la capa intermedia entre el frontend React y los datos/servicios externos:
 
 1. **Expone el directorio de instituciones** guardado en MySQL (`GET /api/institutions`).
-2. **Recibe sugerencias de la comunidad** y las persiste (`POST /api/suggestions`).
+2. **Recibe sugerencias de la comunidad** (`POST /api/suggestions`): las guarda SIEMPRE en MySQL y, recién después, notifica por mail vía un webhook de n8n (el mail nunca condiciona la respuesta).
 3. **Hace de proxy + enriquecedor de contexto hacia un asistente IA** en n8n (`POST /api/assistant`): inyecta el contexto de las instituciones de la base en el prompt antes de reenviarlo al webhook, para que la IA responda con datos reales y no alucine.
 
 ## Stack
@@ -18,6 +18,7 @@ Es la capa intermedia entre el frontend React y los datos/servicios externos:
 | Base de datos | [MySQL](https://www.mysql.com/) con [mysql2](https://github.com/sidorares/node-mysql2) (pool de conexiones) |
 | Asistente IA | [n8n](https://n8n.io/) vía webhook (flujo externo) |
 | CORS / entorno | `cors` + `dotenv` |
+| Tests | [node:test](https://nodejs.org/api/test.html) (built-in) + [supertest](https://github.com/ladjs/supertest) |
 
 ## Instalación
 
@@ -53,6 +54,7 @@ Verificá que arrancó: `http://localhost:3000/api/health` → `{ "status": "ok"
 | `DB_PASSWORD` | Contraseña de MySQL |
 | `DB_NAME` | Nombre de la base (default: `incluyendo_sp`) |
 | `N8N_WEBHOOK_URL` | URL del webhook de n8n que recibe el prompt enriquecido |
+| `N8N_SUGGESTIONS_WEBHOOK_URL` | URL del webhook de n8n que dispara el mail de aviso de sugerencias (opcional: si no está, la sugerencia igual se guarda en MySQL) |
 | `NODE_ENV` | `development` \| `production` |
 
 ## Endpoints
@@ -102,6 +104,12 @@ Devuelve el directorio completo de instituciones verificadas desde MySQL. Las co
 
 Guarda una sugerencia de institución enviada por la comunidad (formulario "Sugerir institución" del frontend). Solo `institution_name` es obligatorio.
 
+**Flujo híbrido:**
+1. El BFF inserta la sugerencia en `community_suggestions` (MySQL).
+2. **Recién después** del insert exitoso, notifica al webhook `N8N_SUGGESTIONS_WEBHOOK_URL` (n8n dispara un mail de aviso). Esta llamada es *fire-and-forget*: si n8n falla, solo se loguea el error — **la respuesta al usuario depende únicamente del INSERT**.
+
+> **Rate limit:** máximo **10 requests cada 15 minutos por IP**. Al superarlo responde `429`.
+
 **Request:**
 
 ```json
@@ -112,7 +120,7 @@ Guarda una sugerencia de institución enviada por la comunidad (formulario "Suge
 }
 ```
 
-**Response `201`** (éxito):
+**Response `201`** (éxito — el INSERT se realizó):
 
 ```json
 { "message": "Sugerencia recibida, ¡gracias por colaborar!" }
@@ -122,6 +130,12 @@ Guarda una sugerencia de institución enviada por la comunidad (formulario "Suge
 
 ```json
 { "error": "institution_name es obligatorio" }
+```
+
+**Response `429`** (rate limit superado):
+
+```json
+{ "error": "Demasiadas sugerencias. Esperá unos minutos y probá de nuevo." }
 ```
 
 **Response `500`** (error de base):
@@ -189,6 +203,19 @@ Health check simple para verificar que el servicio y la conexión a MySQL están
   "environment": "development"
 }
 ```
+
+## Tests
+
+Cobertura de los 3 endpoints + rate limit, **sin necesidad de MySQL ni n8n** (el pool de conexiones y el fetch al webhook se mockean):
+
+```bash
+npm test
+```
+
+- `test/api.test.js` — GET /api/institutions (200 + normalización JSON, 500), POST /api/suggestions (400, 201, 500, notificación a n8n con los 4 campos, 201 aunque n8n falle, sin webhook no llama), POST /api/assistant (400, 500 sin webhook, 502, 200, texto crudo).
+- `test/rate-limit.test.js` — el request 21 a `/api/assistant` responde `429`; el request 11 a `/api/suggestions` responde `429`; verifica los headers `RateLimit-Limit`.
+
+**CI:** GitHub Action (`.github/workflows/ci.yml`) corre `npm test` en Node 20 y 22 en cada push a `main` y en cada pull request.
 
 ## Frontend consumidor
 

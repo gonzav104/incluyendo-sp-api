@@ -17,9 +17,19 @@ const assistantLimiter = rateLimit({
   message: { error: 'Demasiadas solicitudes al asistente. Esperá unos minutos y probá de nuevo.' },
 });
 
+// Límite liviano para sugerencias: también disparan una ejecución de n8n (mail),
+// así que protegemos con 10 requests / 15 min por IP.
+const suggestionLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Demasiadas sugerencias. Esperá unos minutos y probá de nuevo.' },
+});
+
 // Rutas de la API (se montan en /api desde server.js)
 router.get('/institutions', getInstitutions);
-router.post('/suggestions', createSuggestion);
+router.post('/suggestions', suggestionLimiter, createSuggestion);
 router.post('/assistant', assistantLimiter, askAssistant);
 
 module.exports = router;

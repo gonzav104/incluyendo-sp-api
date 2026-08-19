@@ -47,16 +47,53 @@ const createSuggestion = async (req, res) => {
     return res.status(400).json({ error: 'institution_name es obligatorio' });
   }
 
+  // 1) El INSERT es lo único que determina la respuesta al usuario.
   try {
     await pool.query(
       'INSERT INTO community_suggestions (institution_name, specialty, contact_info) VALUES (?, ?, ?)',
       [institution_name.trim(), specialty || null, contact_info || null]
     );
-    res.status(201).json({ message: 'Sugerencia recibida, ¡gracias por colaborar!' });
   } catch (error) {
     console.error('❌ Error en createSuggestion:', error.message);
-    res.status(500).json({ error: 'No se pudo guardar la sugerencia' });
+    return res.status(500).json({ error: 'No se pudo guardar la sugerencia' });
   }
+
+  // 2) Recién después del INSERT exitoso, notificamos por mail vía n8n.
+  //    Fire-and-forget: nunca cambia el status code ni el mensaje de la
+  //    respuesta al frontend. Si n8n falla, solo logueamos — la sugerencia
+  //    ya quedó guardada en MySQL.
+  const webhookUrl = process.env.N8N_SUGGESTIONS_WEBHOOK_URL;
+  if (webhookUrl) {
+    notifySuggestionWebhook(webhookUrl, {
+      institution_name: institution_name.trim(),
+      specialty: specialty || null,
+      contact_info: contact_info || null,
+      created_at: new Date().toISOString(),
+    });
+  }
+
+  res.status(201).json({ message: 'Sugerencia recibida, ¡gracias por colaborar!' });
+};
+
+// Notificación de sugerencia a n8n (dispara el mail de aviso). Fire-and-forget:
+// se ejecuta en background, con timeout de 5s, y solo loguea errores.
+const notifySuggestionWebhook = (webhookUrl, payload) => {
+  fetch(webhookUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(5000),
+  })
+    .then(async (response) => {
+      if (!response.ok) {
+        console.error('❌ n8n (sugerencias) respondió con estado:', response.status);
+        return;
+      }
+      console.log('📧 Sugerencia notificada a n8n (mail)');
+    })
+    .catch((error) => {
+      console.error('❌ No se pudo notificar la sugerencia a n8n:', error.message);
+    });
 };
 
 // POST /api/assistant
