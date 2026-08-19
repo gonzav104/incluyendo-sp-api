@@ -1,0 +1,181 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "last_updated": "2026-08-18",
+    "scope": "San Pedro, Buenos Aires",
+    "coverage_areas": ["TEA", "discapacidad motriz"],
+    "data_status": "verified"
+  },
+  "institutions": [
+    {
+      "id": "escuela-especial-501-hena-yanzon",
+      "name": "Escuela Especial Nº501 \"Hena Yanzon\"",
+      "type": "escuela-primaria",
+      "specialties": ["tea", "discapacidad-motriz", "educacion-especial"],
+      "age_range": { "min": 0, "max": 12 },
+      "address": {
+        "street": "Reinaldo Ansaloni 845",
+        "neighborhood": null,
+        "city": "San Pedro",
+        "postal_code": "2930",
+        "coordinates": { "lat": -33.6748328, "lng": -59.6726031 }
+      },
+      "contact": {
+        "phone": "03329 42-9185",
+        "email": "escuela501@redsp.com.ar"
+      },
+      "coverage": {
+        "cud": "yes",
+        "accepted_plans": ["Publico"]
+      },
+      "accessibility": {
+        "wheelchair_ramp": false,
+        "adapted_bathroom": false,
+        "elevator": false,
+        "signage_simplified": false
+      },
+      "verification": {
+        "status": "pending",
+        "verified_at": "2026-08-18",
+        "source": "Búsqueda web",
+        "notes": "A verificar telefónicamente"
+      }
+    },
+    {
+      "id": "escuela-especial-502-ernesto-tettamanti",
+      "name": "Escuela Especial Nº502 \"Ernesto Tettamanti\"",
+      "type": "escuela-primaria",
+      "specialties": ["tea", "discapacidad-motriz", "educacion-especial"],
+      "age_range": { "min": 0, "max": 12 },
+      "address": {
+        "street": "Avda. Sarmiento 1001",
+        "neighborhood": null,
+        "city": "San Pedro",
+        "postal_code": "2930",
+        "coordinates": { "lat": -33.6828729, "lng": -59.6617978 }
+      },
+      "contact": {
+        "phone": "3329 42-5441",
+        "email": "equiposaladeinfo1@gmail.com"
+      },
+      "coverage": {
+        "cud": "yes",
+        "accepted_plans": ["Publico"]
+      },
+      "accessibility": {
+        "wheelchair_ramp": false,
+        "adapted_bathroom": false,
+        "elevator": false,
+        "signage_simplified": false
+      },
+      "verification": {
+        "status": "pending",
+        "verified_at": "2026-08-18",
+        "source": "Búsqueda web",
+        "notes": "A verificar telefónicamente"
+      }
+    },
+    {
+      "id": "consultorios-emij",
+      "name": "Consultorios EMIJ",
+      "type": "centro-educativo-terapeutico",
+      "specialties": ["tea", "discapacidad-motriz", "estimulacion-temprana", "fonoaudiologia", "psicopedagogia", "kinesiologia", "terapia-ocupacional", "psicologia", "neuropediatria", "integracion-escolar"],
+      "age_range": { "min": 0, "max": 12 },
+      "address": {
+        "street": "Almafuerte 530",
+        "neighborhood": null,
+        "city": "San Pedro",
+        "postal_code": "2930",
+        "coordinates": { "lat": -33.6785792, "lng": -59.6613711 }
+      },
+      "contact": {
+        "phone": "+54 3329 56-0912",
+        "email": "consultoriosemij@hotmail.com"
+      },
+      "coverage": {
+        "cud": "yes",
+        "accepted_plans": ["IOMA", "OSDE", "Galeno", "Particular con reintegro"]
+      },
+      "accessibility": {
+        "wheelchair_ramp": false,
+        "adapted_bathroom": false,
+        "elevator": false,
+        "signage_simplified": false
+      },
+      "verification": {
+        "status": "verified",
+        "verified_at": "2026-08-18",
+        "source": "Relevamiento local",
+        "notes": "Atiende de forma particular y acepta Prepagas/Obras sociales por reintegro."
+      }
+    },
+    {
+      "id": "hospital-privado-sadiv",
+      "name": "Hospital Privado Sadiv",
+      "type": "centro-educativo-terapeutico",
+      "specialties": ["tea", "discapacidad-motriz", "estimulacion-temprana", "fonoaudiologia", "kinesiologia", "terapia-ocupacional"],
+      "age_range": { "min": 0, "max": 12 },
+      "address": {
+        "street": "Av. Sarmiento 2795",
+        "neighborhood": null,
+        "city": "San Pedro",
+        "postal_code": "2930",
+        "coordinates": { "lat": -33.6862304, "lng": -59.6645748 }
+      },
+      "contact": {
+        "phone": "03329 42-6000 / WA: 03329 60-2559",
+        "email": "info@hpsadiv.com"
+      },
+      "coverage": {
+        "cud": "yes",
+        "accepted_plans": ["IOMA", "OSDE", "Galeno (planes seleccionados)", "Particular"]
+      },
+      "accessibility": {
+        "wheelchair_ramp": true,
+        "adapted_bathroom": true,
+        "elevator": true,
+        "signage_simplified": false
+      },
+      "verification": {
+        "status": "verified",
+        "verified_at": "2026-08-18",
+        "source": "Relevamiento local",
+        "notes": "Psicopedagogía se deriva por consultorios externos."
+      }
+    },
+    {
+      "id": "hospital-municipal-san-pedro",
+      "name": "Hospital Subzonal General San Pedro",
+      "type": "organismo-publico",
+      "specialties": ["tea", "discapacidad-motriz", "estimulacion-temprana", "fonoaudiologia"],
+      "age_range": { "min": 0, "max": 12 },
+      "address": {
+        "street": "25 de Mayo 1901",
+        "neighborhood": null,
+        "city": "San Pedro",
+        "postal_code": "2930",
+        "coordinates": { "lat": -33.6849544, "lng": -59.6724031 }
+      },
+      "contact": {
+        "phone": "03329 42-5207",
+        "email": null
+      },
+      "coverage": {
+        "cud": "yes",
+        "accepted_plans": ["Publico"]
+      },
+      "accessibility": {
+        "wheelchair_ramp": false,
+        "adapted_bathroom": false,
+        "elevator": false,
+        "signage_simplified": false
+      },
+      "verification": {
+        "status": "pending",
+        "verified_at": "2026-08-18",
+        "source": "Búsqueda web",
+        "notes": "Medicina pública municipal"
+      }
+    }
+  ]
+}

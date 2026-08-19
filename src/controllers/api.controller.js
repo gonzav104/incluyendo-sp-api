@@ -1,10 +1,38 @@
 const pool = require('../config/db');
 
+// La tabla institutions define las columnas JSON como longtext con
+// CHECK (json_valid(...)) en vez del tipo nativo JSON. mysql2 las devuelve
+// como strings, así que las normalizamos a objetos antes de responder.
+const JSON_COLUMNS = [
+  'specialties',
+  'age_range',
+  'address',
+  'contact',
+  'coverage',
+  'accessibility',
+  'services',
+  'verification',
+];
+
+const parseInstitution = (row) => {
+  const parsed = { ...row };
+  for (const col of JSON_COLUMNS) {
+    if (typeof parsed[col] === 'string') {
+      try {
+        parsed[col] = JSON.parse(parsed[col]);
+      } catch {
+        parsed[col] = null;
+      }
+    }
+  }
+  return parsed;
+};
+
 // GET /api/institutions
 const getInstitutions = async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM institutions');
-    res.status(200).json(rows);
+    res.status(200).json(rows.map(parseInstitution));
   } catch (error) {
     console.error('❌ Error en getInstitutions:', error.message);
     res.status(500).json({ error: 'No se pudieron obtener las instituciones' });
@@ -48,7 +76,7 @@ const askAssistant = async (req, res) => {
   let enrichedPrompt = prompt;
   try {
     const [institutions] = await pool.query('SELECT * FROM institutions LIMIT 50');
-    enrichedPrompt = 'Contexto oficial de San Pedro: ' + JSON.stringify(institutions) + '\n\nConsulta del usuario: ' + prompt;
+    enrichedPrompt = 'Contexto oficial de San Pedro: ' + JSON.stringify(institutions.map(parseInstitution)) + '\n\nConsulta del usuario: ' + prompt;
     console.log(`📚 Contexto inyectado: ${institutions.length} instituciones`);
   } catch (dbError) {
     console.error('⚠️ No se pudo obtener contexto de la DB:', dbError.message);

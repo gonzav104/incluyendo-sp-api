@@ -6,15 +6,22 @@
   "type": "commonjs",
   "scripts": {
     "dev": "nodemon src/server.js",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "seed": "node db/seed.js"
   },
-  "keywords": ["bff", "express", "mysql", "incluyendo-sp"],
+  "keywords": [
+    "bff",
+    "express",
+    "mysql",
+    "incluyendo-sp"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.6.2",
     "mysql2": "^3.23.3"
   },
   "devDependencies": {
