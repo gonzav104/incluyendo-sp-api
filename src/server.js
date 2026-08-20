@@ -1,40 +1,25 @@
 // src/server.js
-// Servidor Express - BFF para Incluyendo SP
+// Bootstrap puro del BFF para Incluyendo SP.
+// Todo el montaje de la app (middlewares, rutas, health) vive en app.js
+// (createApp); acá solo se configura el entorno, se levanta el listener y
+// se integran los handlers de ciclo de vida (T-08).
+
+'use strict';
 
 require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const pool = require('./config/db'); // Inicializa y testea la conexión
-const apiRoutes = require('./routes/api.routes');
+const { createApp } = require('./app');
+const pool = require('./config/db'); // Inicializa y testea la conexión (boot check, FR-DB-3)
+const { registerProcessHandlers } = require('./lib/lifecycle');
 
-const app = express();
+const app = createApp();
 const PORT = process.env.PORT || 3000;
 
-// Middlewares
-// CORS restringido al frontend real (o localhost en desarrollo).
-app.use(
-  cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-  })
-);
-app.use(express.json());
-
-// Rutas principales de la API
-app.use('/api', apiRoutes);
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.status(200).json({
-    status: 'ok',
-    service: 'incluyendo-sp-api',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development'
-  });
-});
-
-// Iniciar servidor
-app.listen(PORT, () => {
+// Guardamos la referencia del server para el graceful shutdown.
+const server = app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
   console.log(`📋 Health check: http://localhost:${PORT}/api/health`);
 });
+
+// Ciclo de vida (FR-SL-1/3/4): SIGTERM/SIGINT drenan y salen con 0;
+// unhandledRejection drena y sale con 1; uncaughtException sale con 1.
+registerProcessHandlers({ server, pool });

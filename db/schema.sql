@@ -6,6 +6,11 @@
 -- contact, coverage, etc.) se guardan como JSON nativo de MySQL en lugar de
 -- normalizar en tablas adicionales, dado el timeframe del MVP.
 -- El frontend consume exactamente esta estructura sin transformaciones.
+--
+-- NOTA DRIFT (FR-DB-4): Aiven y el schema actual usan JSON nativo. Una versión
+-- local intermedia usó longtext + CHECK (json_valid(...)) — mysql2 devolvía
+-- strings y el controller los normalizaba. NO cambiar tipos de columna: el
+-- controller (parseInstitution) es compatible con ambos.
 -- =============================================================================
 
 -- Aseguramos charset utf8mb4: necesario para acentos, emojis y caracteres
